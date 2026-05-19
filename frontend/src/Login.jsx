@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 
+import "./App.css";
+
 function Login({
   setIsLoggedIn,
   setUserRole,
@@ -8,12 +10,12 @@ function Login({
 }) {
 
   const [loginType, setLoginType] =
-    useState("member");
-
-  const [phone, setPhone] =
-    useState("");
+    useState("admin");
 
   const [loginId, setLoginId] =
+    useState("");
+
+  const [phone, setPhone] =
     useState("");
 
   const [password, setPassword] =
@@ -21,7 +23,76 @@ function Login({
 
 
 
+  // ADMIN LOGIN
+
+  const handleAdminLogin = () => {
+
+    if (
+      loginId === "ADMIN001" &&
+      password === "admin123"
+    ) {
+
+      localStorage.setItem(
+        "gymLoggedIn",
+        "true"
+      );
+
+      localStorage.setItem(
+        "gymUserRole",
+        "admin"
+      );
+
+      setIsLoggedIn(true);
+
+      setUserRole("admin");
+
+    } else {
+
+      alert(
+        "Invalid Admin Credentials"
+      );
+    }
+  };
+
+
+
+
+  // STAFF LOGIN
+
+  const handleStaffLogin = () => {
+
+    if (
+      loginId === "STAFF001" &&
+      password === "staff123"
+    ) {
+
+      localStorage.setItem(
+        "gymLoggedIn",
+        "true"
+      );
+
+      localStorage.setItem(
+        "gymUserRole",
+        "staff"
+      );
+
+      setIsLoggedIn(true);
+
+      setUserRole("staff");
+
+    } else {
+
+      alert(
+        "Invalid Staff Credentials"
+      );
+    }
+  };
+
+
+
+
   // MEMBER LOGIN
+
   const handleMemberLogin =
     async () => {
 
@@ -35,14 +106,15 @@ function Login({
         const members =
           response.data.data;
 
-        const foundMember =
+        const member =
           members.find(
-            (member) =>
-              member.phone === phone &&
-              member.password === password
+            (m) =>
+              m.phone === phone &&
+              m.password ===
+                password
           );
 
-        if (foundMember) {
+        if (member) {
 
           localStorage.setItem(
             "gymLoggedIn",
@@ -56,111 +128,60 @@ function Login({
 
           localStorage.setItem(
             "gymMember",
-            JSON.stringify(foundMember)
+            JSON.stringify(member)
           );
 
           setLoggedInMember(
-            foundMember
+            member
           );
-
-          setUserRole("member");
 
           setIsLoggedIn(true);
 
-          return;
-        }
+          setUserRole(
+            "member"
+          );
 
-        alert("Invalid Member Credentials");
+        } else {
+
+          alert(
+            "Invalid Member Credentials"
+          );
+        }
 
       } catch (error) {
 
         console.log(error);
+
+        alert(
+          "Login Error"
+        );
       }
     };
 
 
 
 
-  // ADMIN LOGIN
-  const handleAdminLogin =
-    () => {
+  // MAIN LOGIN
 
-      if (
-        loginId === "ADMIN001" &&
-        password === "admin123"
-      ) {
-
-        localStorage.setItem(
-          "gymLoggedIn",
-          "true"
-        );
-
-        localStorage.setItem(
-          "gymUserRole",
-          "admin"
-        );
-
-        setUserRole("admin");
-
-        setIsLoggedIn(true);
-
-        return;
-      }
-
-      alert("Invalid Admin Credentials");
-    };
-
-
-
-
-  // STAFF LOGIN
-  const handleStaffLogin =
-    () => {
-
-      if (
-        loginId === "STAFF001" &&
-        password === "staff123"
-      ) {
-
-        localStorage.setItem(
-          "gymLoggedIn",
-          "true"
-        );
-
-        localStorage.setItem(
-          "gymUserRole",
-          "staff"
-        );
-
-        setUserRole("staff");
-
-        setIsLoggedIn(true);
-
-        return;
-      }
-
-      alert("Invalid Staff Credentials");
-    };
-
-
-
-
-  // HANDLE LOGIN
   const handleLogin = () => {
 
-    if (loginType === "member") {
-
-      handleMemberLogin();
-    }
-
-    else if (loginType === "admin") {
+    if (
+      loginType === "admin"
+    ) {
 
       handleAdminLogin();
     }
 
-    else if (loginType === "staff") {
+    else if (
+      loginType === "staff"
+    ) {
 
       handleStaffLogin();
+    }
+
+    else {
+
+      handleMemberLogin();
     }
   };
 
@@ -171,35 +192,37 @@ function Login({
 
     <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+        justifyContent:
+          "center",
+        alignItems:
+          "center",
         background:
-          "linear-gradient(to right, #020617, #0f172a)",
+          "linear-gradient(to bottom right, #020617, #0f172a, #111827)",
       }}
     >
 
       <div
         style={{
-          background: "#1e293b",
-          padding: "40px",
-          borderRadius: "16px",
           width: "400px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "18px",
+          background:
+            "rgba(30,41,59,0.9)",
+          padding: "35px",
+          borderRadius:
+            "20px",
           boxShadow:
-            "0px 0px 30px rgba(0,0,0,0.4)",
+            "0 10px 30px rgba(0,0,0,0.4)",
+          border:
+            "1px solid rgba(255,255,255,0.08)",
         }}
       >
 
         <h1
           style={{
-            color: "white",
             textAlign: "center",
-            fontSize: "42px",
-            margin: 0,
+            marginBottom:
+              "10px",
           }}
         >
           BROTHERS GYM
@@ -207,12 +230,15 @@ function Login({
 
         <p
           style={{
-            color: "#94a3b8",
             textAlign: "center",
+            color: "#94a3b8",
+            marginBottom:
+              "30px",
           }}
         >
           Multi Role Login
         </p>
+
 
 
 
@@ -221,51 +247,56 @@ function Login({
         <select
           value={loginType}
           onChange={(e) =>
-            setLoginType(e.target.value)
+            setLoginType(
+              e.target.value
+            )
           }
           style={{
-            padding: "15px",
-            borderRadius: "8px",
-            border: "1px solid #475569",
-            background: "#0f172a",
-            color: "white",
+            width: "100%",
+            marginBottom:
+              "20px",
           }}
         >
-          <option value="member">
-            Member Login
+
+          <option value="admin">
+            Admin Login
           </option>
 
           <option value="staff">
             Staff Login
           </option>
 
-          <option value="admin">
-            Admin Login
+          <option value="member">
+            Member Login
           </option>
+
         </select>
 
 
 
 
-        {/* MEMBER LOGIN */}
+        {/* ADMIN / STAFF */}
 
-        {loginType === "member" && (
+        {(loginType ===
+          "admin" ||
+          loginType ===
+            "staff") && (
 
           <>
+
             <input
               type="text"
-              placeholder="Phone Number"
-              value={phone}
+              placeholder="Login ID"
+              value={loginId}
               onChange={(e) =>
-                setPhone(e.target.value)
+                setLoginId(
+                  e.target.value
+                )
               }
               style={{
-                padding: "15px",
-                borderRadius: "8px",
-                border:
-                  "1px solid #475569",
-                background: "#0f172a",
-                color: "white",
+                width: "100%",
+                marginBottom:
+                  "20px",
               }}
             />
 
@@ -274,43 +305,43 @@ function Login({
               placeholder="Password"
               value={password}
               onChange={(e) =>
-                setPassword(e.target.value)
+                setPassword(
+                  e.target.value
+                )
               }
               style={{
-                padding: "15px",
-                borderRadius: "8px",
-                border:
-                  "1px solid #475569",
-                background: "#0f172a",
-                color: "white",
+                width: "100%",
+                marginBottom:
+                  "20px",
               }}
             />
+
           </>
         )}
 
 
 
 
-        {/* ADMIN / STAFF LOGIN */}
+        {/* MEMBER */}
 
-        {(loginType === "admin" ||
-          loginType === "staff") && (
+        {loginType ===
+          "member" && (
 
           <>
+
             <input
               type="text"
-              placeholder="Login ID"
-              value={loginId}
+              placeholder="Phone Number"
+              value={phone}
               onChange={(e) =>
-                setLoginId(e.target.value)
+                setPhone(
+                  e.target.value
+                )
               }
               style={{
-                padding: "15px",
-                borderRadius: "8px",
-                border:
-                  "1px solid #475569",
-                background: "#0f172a",
-                color: "white",
+                width: "100%",
+                marginBottom:
+                  "20px",
               }}
             />
 
@@ -319,17 +350,17 @@ function Login({
               placeholder="Password"
               value={password}
               onChange={(e) =>
-                setPassword(e.target.value)
+                setPassword(
+                  e.target.value
+                )
               }
               style={{
-                padding: "15px",
-                borderRadius: "8px",
-                border:
-                  "1px solid #475569",
-                background: "#0f172a",
-                color: "white",
+                width: "100%",
+                marginBottom:
+                  "20px",
               }}
             />
+
           </>
         )}
 
@@ -339,15 +370,12 @@ function Login({
         {/* LOGIN BUTTON */}
 
         <button
-          onClick={handleLogin}
+          onClick={
+            handleLogin
+          }
           style={{
-            padding: "15px",
-            background: "#2563eb",
-            color: "white",
-            border: "none",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: "bold",
+            width: "100%",
+            padding: "14px",
             fontSize: "16px",
           }}
         >
@@ -356,29 +384,29 @@ function Login({
 
 
 
-        {/* LOGIN DETAILS */}
+
+        {/* DEFAULT CREDENTIALS */}
 
         <div
           style={{
-            color: "#94a3b8",
+            marginTop: "25px",
             fontSize: "13px",
-            marginTop: "10px",
+            color: "#94a3b8",
+            lineHeight:
+              "24px",
           }}
         >
 
           <p>
             Admin:
-            ADMIN001 / admin123
+            ADMIN001 /
+            admin123
           </p>
 
           <p>
             Staff:
-            STAFF001 / staff123
-          </p>
-
-          <p>
-            Members use:
-            Phone + Password
+            STAFF001 /
+            staff123
           </p>
 
         </div>
