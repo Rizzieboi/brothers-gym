@@ -3,21 +3,31 @@ const cors = require("cors");
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "*",
-  })
-);
-
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send("Brothers Gym API Running");
 });
 
-const memberRoutes = require("./routes/memberRoutes");
+// TEST ROUTE
+app.post("/api/members", async (req, res) => {
+  try {
+    console.log(req.body);
 
-app.use("/api/members", memberRoutes);
+    return res.status(200).json({
+      success: true,
+      message: "Member added successfully",
+    });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+});
 
 const PORT = process.env.PORT || 5000;
 
