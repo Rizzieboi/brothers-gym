@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 
@@ -6,30 +8,19 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// IMPORT ROUTES
+const memberRoutes = require("./routes/memberRoutes");
+
+// API ROUTES
+app.use("/api/members", memberRoutes);
+
+// TEST ROUTE
 app.get("/", (req, res) => {
   res.send("Brothers Gym API Running");
 });
 
-// TEST ROUTE
-app.post("/api/members", async (req, res) => {
-  try {
-    console.log(req.body);
-
-    return res.status(200).json({
-      success: true,
-      message: "Member added successfully",
-    });
-  } catch (error) {
-    console.log(error);
-
-    return res.status(500).json({
-      success: false,
-      message: "Server error",
-    });
-  }
-});
-
-const PORT = process.env.PORT;;
+// PORT
+const PORT = process.env.PORT;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
