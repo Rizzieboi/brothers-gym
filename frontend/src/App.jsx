@@ -60,7 +60,7 @@ function App() {
 
       const response =
         await axios.get(
-          "http://localhost:5000/api/members/all-members"
+          "https://YOUR-RENDER-URL.onrender.com"
         );
 
       setMembers(response.data.data);
@@ -159,7 +159,7 @@ function App() {
       }
 
       await axios.post(
-        "http://localhost:5000/api/members/add-member",
+        "https://YOUR-RENDER-URL.onrender.com",
         formData
       );
 
@@ -250,7 +250,7 @@ Thank you for joining Brothers Gym 💪
       try {
 
         await axios.delete(
-          `http://localhost:5000/api/members/delete-member/${id}`
+          `https://YOUR-RENDER-URL.onrender.com`
         );
 
         alert(
@@ -275,7 +275,7 @@ Thank you for joining Brothers Gym 💪
       try {
 
         await axios.put(
-          `http://localhost:5000/api/members/mark-attendance/${id}`
+          `https://YOUR-RENDER-URL.onrender.com`
         );
 
         alert(
@@ -300,7 +300,7 @@ Thank you for joining Brothers Gym 💪
       try {
 
         await axios.put(
-          `http://localhost:5000/api/members/renew-membership/${member.id}`,
+          `https://YOUR-RENDER-URL.onrender.com`,
           {
             membership_plan:
               "Monthly",
