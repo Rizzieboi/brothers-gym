@@ -159,8 +159,8 @@ function App() {
       }
 
       await axios.post(
-        "https://YOUR-RENDER-URL.onrender.com",
-        formData
+  "https://brothers-gym-backend.onrender.com/api/members",
+  formData
       );
 
 
