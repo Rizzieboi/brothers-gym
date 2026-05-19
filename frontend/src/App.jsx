@@ -36,8 +36,6 @@ function App() {
   const [searchPhone, setSearchPhone] =
     useState("");
 
-
-
   const [formData, setFormData] =
     useState({
       name: "",
@@ -52,7 +50,6 @@ function App() {
 
 
 
-
   // FETCH MEMBERS
   const fetchMembers = async () => {
 
@@ -60,7 +57,7 @@ function App() {
 
       const response =
         await axios.get(
-          "https://YOUR-RENDER-URL.onrender.com"
+          "https://brothers-gym-backend.onrender.com/api/members/all-members"
         );
 
       setMembers(response.data.data);
@@ -80,7 +77,6 @@ function App() {
     }
 
   }, [isLoggedIn]);
-
 
 
 
@@ -117,7 +113,6 @@ function App() {
       amount: updatedAmount,
     });
   };
-
 
 
 
@@ -159,59 +154,9 @@ function App() {
       }
 
       await axios.post(
-  "https://brothers-gym-backend.onrender.com/api/members",
-  formData
+        "https://brothers-gym-backend.onrender.com/api/members",
+        formData
       );
-
-
-
-      // WHATSAPP RECEIPT
-
-      const totalPaid =
-        Number(formData.amount) +
-        Number(
-          formData.admission_fee
-        );
-
-      const receiptMessage =
-`
-🏋️ BROTHERS GYM RECEIPT
-
-Member:
-${formData.name}
-
-Plan:
-${formData.membership_plan}
-
-Membership Fee:
-₹${formData.amount}
-
-Admission Fee:
-₹${formData.admission_fee}
-
-Total Paid:
-₹${totalPaid}
-
-Payment Method:
-${formData.payment_method}
-
-Date:
-${new Date().toLocaleDateString()}
-
-Thank you for joining Brothers Gym 💪
-`;
-
-
-
-      const whatsappUrl =
-        `https://wa.me/91${formData.phone}?text=${encodeURIComponent(receiptMessage)}`;
-
-      window.open(
-        whatsappUrl,
-        "_blank"
-      );
-
-
 
       alert(
         "Member Added Successfully"
@@ -242,141 +187,14 @@ Thank you for joining Brothers Gym 💪
 
 
 
-
-  // DELETE MEMBER
-  const deleteMember =
-    async (id) => {
-
-      try {
-
-        await axios.delete(
-          `https://YOUR-RENDER-URL.onrender.com`
-        );
-
-        alert(
-          "Member Deleted"
-        );
-
-        fetchMembers();
-
-      } catch (error) {
-
-        console.log(error);
-      }
-    };
-
-
-
-
-  // ATTENDANCE
-  const markAttendance =
-    async (id) => {
-
-      try {
-
-        await axios.put(
-          `https://YOUR-RENDER-URL.onrender.com`
-        );
-
-        alert(
-          "Attendance Marked"
-        );
-
-        fetchMembers();
-
-      } catch (error) {
-
-        console.log(error);
-      }
-    };
-
-
-
-
-  // RENEW
-  const renewMembership =
-    async (member) => {
-
-      try {
-
-        await axios.put(
-          `https://YOUR-RENDER-URL.onrender.com`,
-          {
-            membership_plan:
-              "Monthly",
-            amount: 1500,
-            payment_method:
-              "Cash",
-          }
-        );
-
-
-
-        const renewalMessage =
-`
-🏋️ BROTHERS GYM RENEWAL RECEIPT
-
-Member:
-${member.name}
-
-Plan Renewed:
-Monthly
-
-Amount Paid:
-₹1500
-
-Payment Method:
-Cash
-
-Date:
-${new Date().toLocaleDateString()}
-
-Thank you for renewing your membership 💪
-`;
-
-
-
-        const whatsappUrl =
-          `https://wa.me/91${member.phone}?text=${encodeURIComponent(renewalMessage)}`;
-
-        window.open(
-          whatsappUrl,
-          "_blank"
-        );
-
-
-
-        alert(
-          "Membership Renewed"
-        );
-
-        fetchMembers();
-
-      } catch (error) {
-
-        console.log(error);
-      }
-    };
-
-
-
-
-  // WHATSAPP REMINDER
-  const sendWhatsAppReminder =
-    (member) => {
-
-      const message =
-        `Hello ${member.name}, your membership at Brothers Gym is expiring soon. Please renew your membership.`;
-
-      const whatsappUrl =
-        `https://wa.me/91${member.phone}?text=${encodeURIComponent(message)}`;
-
-      window.open(
-        whatsappUrl,
-        "_blank"
-      );
-    };
-
+  // SEARCH
+  const filteredMembers =
+    members.filter(
+      (member) =>
+        member.phone.includes(
+          searchPhone
+        )
+    );
 
 
 
@@ -405,99 +223,6 @@ Thank you for renewing your membership 💪
 
 
 
-
-  // MEMBERSHIP STATUS
-  const getMembershipStatus =
-    (expiryDate) => {
-
-      const today =
-        new Date();
-
-      const expiry =
-        new Date(expiryDate);
-
-      const difference =
-        expiry - today;
-
-      const daysLeft =
-        Math.ceil(
-          difference /
-          (1000 *
-            60 *
-            60 *
-            24)
-        );
-
-      if (daysLeft < 0) {
-        return "Expired ❌";
-      }
-
-      if (daysLeft <= 5) {
-        return "Expiring Soon ⚠️";
-      }
-
-      return "Active ✅";
-    };
-
-
-
-
-  // SEARCH
-  const filteredMembers =
-    members.filter(
-      (member) =>
-        member.phone.includes(
-          searchPhone
-        )
-    );
-
-
-
-
-  // DASHBOARD
-  const totalMembers =
-    members.length;
-
-  const activeMembers =
-    members.filter(
-      (member) =>
-        getMembershipStatus(
-          member.expiry_date
-        ) === "Active ✅"
-    ).length;
-
-  const expiredMembers =
-    members.filter(
-      (member) =>
-        getMembershipStatus(
-          member.expiry_date
-        ) === "Expired ❌"
-    ).length;
-
-  const totalAttendance =
-    members.reduce(
-      (total, member) =>
-        total +
-        Number(
-          member.attendance_count ||
-            0
-        ),
-      0
-    );
-
-  const totalRevenue =
-    members.reduce(
-      (total, member) =>
-        total +
-        Number(
-          member.amount || 0
-        ),
-      0
-    );
-
-
-
-
   // LOGOUT
   const handleLogout = () => {
 
@@ -522,7 +247,6 @@ Thank you for renewing your membership 💪
 
 
 
-
   // LOGIN PAGE
   if (!isLoggedIn) {
 
@@ -540,7 +264,6 @@ Thank you for renewing your membership 💪
       />
     );
   }
-
 
 
 
@@ -572,41 +295,6 @@ Thank you for renewing your membership 💪
         </button>
 
       </div>
-
-
-
-
-      {/* DASHBOARD */}
-
-      <div className="dashboard">
-
-        <div className="card">
-          <h3>Total Members</h3>
-          <h1>{totalMembers}</h1>
-        </div>
-
-        <div className="card">
-          <h3>Active Members</h3>
-          <h1>{activeMembers}</h1>
-        </div>
-
-        <div className="card">
-          <h3>Expired Members</h3>
-          <h1>{expiredMembers}</h1>
-        </div>
-
-        <div className="card">
-          <h3>Total Attendance</h3>
-          <h1>{totalAttendance}</h1>
-        </div>
-
-        <div className="card">
-          <h3>Total Revenue</h3>
-          <h1>₹{totalRevenue}</h1>
-        </div>
-
-      </div>
-
 
 
 
@@ -757,8 +445,6 @@ Thank you for renewing your membership 💪
 
 
 
-
-
       {/* SEARCH */}
 
       <div className="search-box">
@@ -780,23 +466,16 @@ Thank you for renewing your membership 💪
 
 
 
-
       {/* EXPORT */}
 
-      {userRole ===
-        "admin" && (
-
-        <button
-          className="export-btn"
-          onClick={
-            exportExcel
-          }
-        >
-          Export Excel
-        </button>
-      )}
-
-
+      <button
+        className="export-btn"
+        onClick={
+          exportExcel
+        }
+      >
+        Export Excel
+      </button>
 
 
 
@@ -814,11 +493,9 @@ Thank you for renewing your membership 💪
 
             <th>Name</th>
             <th>Phone</th>
+            <th>Email</th>
             <th>Plan</th>
             <th>Total Paid</th>
-            <th>Status</th>
-            <th>Attendance</th>
-            <th>Actions</th>
 
           </tr>
 
@@ -842,6 +519,10 @@ Thank you for renewing your membership 💪
                 </td>
 
                 <td>
+                  {member.email}
+                </td>
+
+                <td>
                   {
                     member.membership_plan
                   }
@@ -850,83 +531,9 @@ Thank you for renewing your membership 💪
                 <td>
                   ₹
                   {
-                    member.amount
+                    Number(member.amount) +
+                    Number(member.admission_fee)
                   }
-                </td>
-
-                <td>
-                  {
-                    getMembershipStatus(
-                      member.expiry_date
-                    )
-                  }
-                </td>
-
-                <td>
-                  {
-                    member.attendance_count
-                  }
-                </td>
-
-                <td>
-
-                  <button
-                    onClick={() =>
-                      setSelectedMember(
-                        member
-                      )
-                    }
-                  >
-                    View
-                  </button>
-
-                  <button
-                    onClick={() =>
-                      markAttendance(
-                        member.id
-                      )
-                    }
-                  >
-                    Attendance
-                  </button>
-
-                  <button
-                    className="renew-btn"
-                    onClick={() =>
-                      renewMembership(
-                        member
-                      )
-                    }
-                  >
-                    Renew
-                  </button>
-
-                  <button
-                    className="whatsapp-btn"
-                    onClick={() =>
-                      sendWhatsAppReminder(
-                        member
-                      )
-                    }
-                  >
-                    WhatsApp
-                  </button>
-
-                  {userRole ===
-                    "admin" && (
-
-                    <button
-                      className="delete-btn"
-                      onClick={() =>
-                        deleteMember(
-                          member.id
-                        )
-                      }
-                    >
-                      Delete
-                    </button>
-                  )}
-
                 </td>
 
               </tr>
@@ -938,9 +545,6 @@ Thank you for renewing your membership 💪
       </table>
 
 
-
-
-      {/* MODAL */}
 
       <MemberModal
         member={
